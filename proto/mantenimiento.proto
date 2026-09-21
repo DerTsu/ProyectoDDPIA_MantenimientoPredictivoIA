@@ -1,0 +1,41 @@
+// Contrato gRPC entre la interfaz Streamlit ("web") y el servicio de
+// inferencia ("inference") que aloja TabPFN-v2. Ver src/serving/server.py
+// (implementación del servicio) y app/utils/model.py (cliente).
+//
+// El límite del servicio es deliberadamente angosto: el vector de 8 features
+// ya viene preprocesado desde app/utils/preprocessing.py (misma lógica y
+// mismo orden que src/preprocessing/preprocess.py, ver CLAUDE.md) — el
+// servicio de inferencia solo carga el modelo y predice, no preprocesa.
+//
+// Regenerar los stubs tras editar este archivo: `make proto`.
+
+syntax = "proto3";
+
+package mantenimiento;
+
+// Servicio de inferencia del modelo TabPFN-v2 de mantenimiento predictivo.
+service InferenceService {
+  // Predice la probabilidad de falla a partir del vector de 8 features.
+  rpc PredictFailure(PredictionRequest) returns (PredictionResponse);
+
+  // Confirma que el modelo está cargado y listo para inferencia.
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Vector de 8 features en el orden de NOMBRE_FEATURES (Type_H, Type_L,
+// Type_M, Air temperature [K], Process temperature [K], Rotational speed
+// [rpm], Torque [Nm], Tool wear [min]).
+message PredictionRequest {
+  repeated double features = 1;
+}
+
+message PredictionResponse {
+  double proba_no_failure = 1;
+  double proba_failure = 2;
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  bool ready = 1;
+}

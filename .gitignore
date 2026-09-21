@@ -1,0 +1,59 @@
+# ---- Entornos virtuales ----
+.venv/
+venv/
+env/
+ENV/
+
+# ---- Cachés de Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ---- Cobertura de tests (make coverage) ----
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.ipynb_checkpoints/
+
+# ---- Datos pesados (se conservan los .gitkeep) ----
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# ---- MLflow ----
+mlruns/
+mlflow.db
+*.mlflow
+
+# ---- Credenciales / entorno ----
+.env
+.env.*
+!.env.example
+
+# ---- Modelos y artefactos entrenados ----
+*.pkl
+*.joblib
+*.onnx
+
+# ---- Archivos del sistema ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Salidas de notebooks ----
+# (los .ipynb se versionan; sus checkpoints y outputs no)
+*.nbconvert.ipynb
+
+# ---- IDE ----
+.vscode/
+.idea/
+
+# ---- Build / distribución ----
+build/
+dist/
+*.egg-info/

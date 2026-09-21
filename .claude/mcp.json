@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "engram": {
+      "command": "C:\\Users\\julia\\go\\bin\\engram.exe",
+      "args": ["mcp", "--tools=agent", "--project", "mantenimiento-predictivo"],
+      "disabled": false
+    }
+  }
+}

@@ -1,0 +1,77 @@
+# ---- Control de versiones ----
+.git/
+.gitignore
+.github/
+.gga/
+
+# ---- Entornos virtuales ----
+.venv/
+venv/
+env/
+ENV/
+
+# ---- Cachés y artefactos de Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.ipynb_checkpoints/
+
+# ---- Datos: el dataset AI4I 2020 se monta como volumen en runtime, no se ----
+# ---- hornea en la imagen (ver README > "Ejecución con Docker") ----
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# ---- MLflow (solo lo usa scripts/evaluar_modelos.py, no la app) ----
+mlruns/
+mlflow.db
+*.mlflow
+
+# ---- Credenciales / entorno ----
+.env
+.env.*
+!.env.example
+
+# ---- Modelos y artefactos entrenados ----
+*.pkl
+*.joblib
+*.onnx
+
+# ---- No necesario en la imagen de producción ----
+tests/
+notebooks/
+EDA/
+docs/
+specs/
+.specify/
+.claude/
+docker/
+Makefile
+
+# ---- Documentación (README.md se copia explícitamente en el Dockerfile) ----
+*.md
+!README.md
+
+# ---- Archivos del sistema / IDE ----
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# ---- Build / distribución ----
+build/
+dist/
+*.egg-info/
+
+# ---- El propio contexto Docker ----
+Dockerfile
+.dockerignore

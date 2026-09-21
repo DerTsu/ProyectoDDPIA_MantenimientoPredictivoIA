@@ -1,0 +1,76 @@
+[project]
+name = "mantenimiento-predictivo"
+version = "0.1.0"
+description = "Mantenimiento predictivo con TabPFN-v2 sobre AI4I 2020"
+readme = "README.md"
+authors = [
+    { name = "Juliana Campuzano" },
+    { name = "Diego Fernando Garcés" },
+    { name = "Jorge Iván Gonzáles" },
+    { name = "Juan José Mosquera" },
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "grpcio>=1.84.0",
+    "matplotlib>=3.11.1",
+    "mlflow>=3.16.0",
+    "numpy>=2.4.6",
+    "pandas>=3.0.5",
+    "scikit-learn>=1.9.0",
+    "streamlit>=1.63.0",
+    "tabpfn>=8.5.0",
+    "torch>=2.14.0",
+    "xgboost>=3.2.0",
+]
+
+[tool.uv]
+package = false
+
+# torch es dependencia transitiva de tabpfn, pero se fija aqui como directa para
+# poder forzar el build CPU-only en Linux: el wheel por defecto de PyPI arrastra
+# el stack CUDA completo (cuda-toolkit, nvidia-cudnn/nccl/cusparselt/nvshmem,
+# triton), varios GB innecesarios ya que el proyecto solo corre inferencia en CPU
+# (device="cpu" fijo en src/models/tabpfn_model.py) — y es lo que agoto el disco
+# al construir la imagen Docker. macOS/Windows no se ven afectados: PyPI ya
+# distribuye esas plataformas sin CUDA.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+# proto/*_pb2*.py son generados por grpc_tools.protoc (`make proto`), no se
+# editan a mano: no tiene sentido exigirles docstrings ni estilo del proyecto.
+extend-exclude = [".claude", ".agents", "proto/*_pb2.py", "proto/*_pb2.pyi", "proto/*_pb2_grpc.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "D"]
+# D203/D213 chocan con D211/D212 (misma decision, estilos opuestos).
+ignore = ["D203", "D213"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Los tests se documentan con la estructura AAA en el cuerpo, no con Args/Returns.
+"tests/**" = ["D103", "D100", "D104"]
+# En Streamlit, la manipulación de sys.path debe ocurrir antes de los imports de src.
+"app/**" = ["E402"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "grpcio-tools>=1.84.0",
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.7",
+]
