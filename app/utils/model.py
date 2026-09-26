@@ -18,7 +18,7 @@ import streamlit as st
 from proto import mantenimiento_pb2, mantenimiento_pb2_grpc
 
 INFERENCE_SERVICE_ADDR = os.environ.get("INFERENCE_SERVICE_ADDR", "localhost:50051")
-TIMEOUT_SEGUNDOS = 10.0
+TIMEOUT_SEGUNDOS = 60.0
 
 
 class InferenceServiceUnavailableError(RuntimeError):

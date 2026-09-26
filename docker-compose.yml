@@ -14,21 +14,19 @@ services:
     build:
       context: .
       target: inference
+    network_mode: host
     environment:
       - GRPC_PORT=50051
       - TABPFN_TOKEN=${TABPFN_TOKEN:-}
     volumes:
       - ./data:/app/data
-    ports:
-      - "50051:50051"
 
   web:
     build:
       context: .
       target: web
+    network_mode: host
     environment:
-      - INFERENCE_SERVICE_ADDR=inference:50051
-    ports:
-      - "8501:8501"
+      - INFERENCE_SERVICE_ADDR=localhost:50051
     depends_on:
       - inference

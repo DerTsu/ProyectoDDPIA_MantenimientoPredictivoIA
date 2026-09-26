@@ -1,0 +1,44 @@
+name: CI - Integración Continua
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test-and-lint:
+    name: Calidad y Pruebas Unitarias
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descarga el código del repositorio
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # 2. Instala el gestor ultra-rápido uv
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+
+      # 3. Configura Python 3.12
+      - name: Configurar Python 3.12
+        run: uv python install 3.12
+
+      # 4. Instala las dependencias y herramientas de desarrollo
+      - name: Instalar dependencias con uv
+        run: uv sync --frozen
+
+      # 5. Linter y revisión de estilo de código
+      - name: 1. Verificación de estilo con Ruff
+        run: uv run ruff check .
+
+      # 6. Verificación de formato
+      - name: 2. Verificación de formato con Ruff
+        run: uv run ruff format --check .
+
+      # 7. Ejecutar suite de pruebas unitarias
+      - name: 3. Ejecutar pruebas unitarias con Pytest
+        run: uv run pytest tests/unit/ -v

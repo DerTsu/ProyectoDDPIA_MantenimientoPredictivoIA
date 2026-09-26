@@ -79,13 +79,29 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
 
 CMD ["python", "-m", "src.serving.server"]
 
-# ── web: interfaz Streamlit, cliente gRPC de `inference`, puerto 8501 ───────
-FROM base AS web
+# ── web: interfaz Streamlit ligera (sin PyTorch ni TabPFN) ───────────────────
+FROM python:3.12-slim AS web
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    STREAMLIT_SERVER_HEADLESS=true \
+    STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+
+WORKDIR /app
+
+# Instala únicamente las librerías necesarias para la web (~350 MB)
+RUN uv pip install --system streamlit grpcio numpy pandas scikit-learn
+
+COPY proto/ ./proto/
+COPY app/ ./app/
+COPY src/ ./src/
 
 EXPOSE 8501
 
-# Streamlit expone un endpoint de salud propio; se usa Python (ya presente en
-# la imagen) en vez de instalar curl solo para esto.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD python -c "import urllib.request as u; u.urlopen('http://localhost:8501/_stcore/health', timeout=3)" || exit 1
 
